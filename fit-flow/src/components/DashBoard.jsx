@@ -1,13 +1,43 @@
 import NavBar from "./NavBar";
 import ExerciseLists from "./ExerciseLists";
 import useExerciseStore from "../stores/exerciseStore";
-import useFetchExercises from "./fetchData"; // Add this
+import { useEffect } from "react";
 
 const Dashboard = () => {
-  useFetchExercises(); // Fetch data on mount
-  const { favoriteIds, exercises } = useExerciseStore();
+  const { exercises, fetchExercises, loading, error, favoriteIds } = useExerciseStore();
+
+  // Fetch data on mount
+  useEffect(() => {
+    if (exercises.length === 0) {
+      fetchExercises();
+    }
+  }, [exercises.length, fetchExercises]);
 
   const favoriteExercises = exercises.filter((ex) => favoriteIds.includes(ex.id));
+
+  if (loading && exercises.length === 0) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
+
+  if (error && exercises.length === 0) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-600 mb-4">Error loading exercises: {error}</p>
+          <button 
+            onClick={() => fetchExercises()}
+            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -41,11 +71,7 @@ const Dashboard = () => {
               {favoriteExercises.slice(0, 6).map((exercise) => (
                 <div key={exercise.id} className="border rounded-lg overflow-hidden">
                   <img
-                    src={
-                      exercise.gifUrl && typeof exercise.gifUrl === "string"
-                        ? `https://exercisedb.p.rapidapi.com/exercises/gif/${exercise.gifUrl.split("/").pop()}`
-                        : "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&h=300&fit=crop"
-                    }
+                    src={exercise.gifUrl || "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&h=300&fit=crop"}
                     alt={exercise.name}
                     className="w-full h-48 object-cover"
                     onError={(e) => {

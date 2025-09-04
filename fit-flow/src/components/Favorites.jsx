@@ -1,4 +1,5 @@
-import useExerciseStore from 'exerciseStore'
+import useExerciseStore from '../stores/exerciseStore';
+import NavBar from './NavBar';
 
 const Favorites = () => {
   const { favoriteIds, exercises } = useExerciseStore();
@@ -7,6 +8,7 @@ const Favorites = () => {
 
   return (
     <div>
+      <NavBar />
       <h2>Your Favorite Exercises</h2>
       {favoriteExercises.length > 0 ? (
         <ul>
@@ -20,4 +22,5 @@ const Favorites = () => {
     </div>
   );
 };
+
 export default Favorites;

@@ -11,10 +11,13 @@ const ExerciseLists = () => {
   const selectedCategory = useExerciseStore((state) => state.selectedCategory);
   const favoriteIds = useExerciseStore((state) => state.favoriteIds);
   const toggleFavorite = useExerciseStore((state) => state.toggleFavorite);
+  console.log(exercises);
 
   // Compute filtered list locally
   const filtered = exercises.filter((ex) => {
-    const matchesSearch = ex.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const name = ex.name || "";
+    const term = searchTerm || "";
+    const matchesSearch = name.toLowerCase().includes(term.toLowerCase());
     const matchesCategory =
       !selectedCategory || selectedCategory === "all" || ex.bodyPart === selectedCategory;
     return matchesSearch && matchesCategory;
@@ -44,8 +47,8 @@ const ExerciseLists = () => {
               <div className="bg-white shadow-lg rounded-lg overflow-hidden border border-gray-200 hover:shadow-xl transition-shadow duration-300">
                 <img
                   src={
-                    exercise.gifUrl
-                      ? `https://exercisedb.p.rapidapi.com/exercises/gif/${exercise.gifUrl.split("/").pop()}`
+                    exercise.frontImage && exercise.frontImage.length > 0
+                      ? exercise.frontImage
                       : "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&h=300&fit=crop"
                   }
                   alt={exercise.name}
@@ -60,7 +63,11 @@ const ExerciseLists = () => {
                     {exercise.name}
                   </h2>
                   <p className="text-sm text-gray-600 mt-1">{exercise.bodyPart}</p>
-                  <p className="text-xs text-gray-500 mt-1">Equipment: {exercise.equipment}</p>
+                  {(exercise.muscles?.length > 0 || exercise.muscles_secondary?.length > 0) && (
+                    <p className="text-xs text-gray-500 mt-1">
+                      Muscles: {[...(exercise.muscles || []).map(m => m.name), ...(exercise.muscles_secondary || []).map(m => m.name)].join(", ")}
+                    </p>
+                  )}
                   <div
                     className="mt-2 flex items-center cursor-pointer"
                     onClick={(e) => {
