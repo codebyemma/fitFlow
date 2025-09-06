@@ -14,7 +14,7 @@ const Footer = () => {
           <Link to="/favorites" className="text-sm hover:underline">Favorites</Link>
           <Link to="/routine-builder" className="text-sm hover:underline">Routine Builder</Link>
           <Link to="/workout-tracker" className="text-sm hover:underline">Workout Tracker</Link>
-          <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="text-sm hover:underline">GitHub</a>
+          <a href="https://github.com/codebyemma/fitFlow" target="_blank" rel="noopener noreferrer" className="text-sm hover:underline">GitHub</a>
         </nav>
       </div>
 

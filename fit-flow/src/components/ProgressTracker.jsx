@@ -44,9 +44,8 @@ const ProgressTracker = ({ exerciseId }) => {
   const getExerciseName = (id) => {
   const exercise = exercises.find((ex) => String(ex.id) === String(id));
   if (!exercise) return "Unknown Exercise";
-  // Prefer top-level name, then translation, then a generic fallback
   const translation = exercise.translations?.find((t) => t.language === 2);
-  return exercise.name || translation?.name || "Unnamed Exercise";
+  return translation?.name || "Unnamed Exercise";
   };
 
   // Filter logs based on time range
