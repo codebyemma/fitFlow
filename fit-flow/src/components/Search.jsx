@@ -67,6 +67,7 @@ const Search = () => {
           Clear Filters
         </button>
       </div>
+      <hr />
     </div>
   );
 };

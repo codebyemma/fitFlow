@@ -1,7 +1,7 @@
 // src/components/RoutineBuilder.jsx
 import { useState } from "react";
 import useExerciseStore from "../stores/exerciseStore";
-import Exercise from "./Exercise"; // Make sure this exists
+import Exercise from "./Exercise";
 import { Link } from "react-router-dom";
 import NavBar from "./NavBar";
 
@@ -140,17 +140,20 @@ const RoutineBuilder = () => {
 
                         {/* Exercise selector */}
                         <div className="flex-1 w-full">
-                            <Exercise
-                              onSelect={(ex) =>
-                                addWorkout(r.id, d.id, {
-                                  exerciseId: ex.id,
-                                  name: ex.name || ex.translations?.find((t) => t.language === 2)?.name || "Unnamed Exercise",
-                                  sets,
-                                  reps: 8,
-                                  weight: 0,
-                                })
-                              }
-                            />
+                          <Exercise
+                            onSelect={(ex) =>
+                              addWorkout(r.id, d.id, {
+                                exerciseId: ex.id,
+                                name:
+                                  ex.translations?.find(
+                                    (t) => t.language === 2
+                                  )?.name || "Unnamed Exercise",
+                                sets,
+                                reps: 8,
+                                weight: 0,
+                              })
+                            }
+                          />
                         </div>
                       </div>
                     )}

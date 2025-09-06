@@ -2,11 +2,13 @@ import { useState, useEffect } from "react";
 import useExerciseStore from "../stores/exerciseStore";
 import { Link } from "react-router-dom";
 import NavBar from "./NavBar";
+import ProgressTracker from "./ProgressTracker";
 
 const WorkoutTracker = () => {
   const { routines, logProgress, exercises, fetchExercises } = useExerciseStore();
   const [selectedExercise, setSelectedExercise] = useState(null);
   const [form, setForm] = useState({ weight: "", reps: "", sets: "" });
+  const [activeTab, setActiveTab] = useState("tracker"); // "tracker" or "progress"
 
   // Fetch exercises when component mounts
   useEffect(() => {
@@ -44,62 +46,85 @@ const WorkoutTracker = () => {
       <NavBar />
 
       <div className="max-w-7xl mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold text-gray-800 mb-8">Workout Tracker</h1>
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold text-gray-800">Workout Tracker</h1>
+          
+          <div className="flex bg-gray-100 rounded-lg p-1">
+            <button
+              onClick={() => setActiveTab("tracker")}
+              className={`px-4 py-2 rounded-md font-medium transition ${activeTab === "tracker" ? "bg-white shadow text-blue-600" : "text-gray-600 hover:text-gray-800"}`}
+            >
+              Track Workouts
+            </button>
+            <button
+              onClick={() => setActiveTab("progress")}
+              className={`px-4 py-2 rounded-md font-medium transition ${activeTab === "progress" ? "bg-white shadow text-blue-600" : "text-gray-600 hover:text-gray-800"}`}
+            >
+              View Progress
+            </button>
+          </div>
+        </div>
 
-        {routines.map((r) => (
-          <div
-            key={r.id}
-            className="mb-8 border border-gray-200 rounded-xl bg-white shadow-sm p-6"
-          >
-            <h2 className="text-2xl font-semibold text-blue-600 mb-4">
-              Routine: {r.name}
-            </h2>
+        {activeTab === "tracker" ? (
+          <div>
+            {routines.map((r) => (
+              <div
+                key={r.id}
+                className="mb-8 border border-gray-200 rounded-xl bg-white shadow-sm p-6"
+              >
+                <h2 className="text-2xl font-semibold text-blue-600 mb-4">
+                  Routine: {r.name}
+                </h2>
 
-            {r.days.map((d) => (
-              <div key={d.id} className="mb-6">
-                <h3 className="text-lg font-medium text-purple-700 mb-3">
-                  Day: {d.name}
-                </h3>
+                {r.days.map((d) => (
+                  <div key={d.id} className="mb-6">
+                    <h3 className="text-lg font-medium text-purple-700 mb-3">
+                      Day: {d.name}
+                    </h3>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {d.workouts.map((w) => (
-                    <div
-                      key={w.id}
-                      className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow hover:shadow-md transition"
-                    >
-                      <div>
-                        <div className="font-medium text-gray-800">
-                          {w.exerciseId ? (
-                            <Link
-                              to={`/exercise/${w.exerciseId}`}
-                              className="text-blue-600 hover:underline"
-                            >
-                              {getExerciseName(w.exerciseId)}
-                            </Link>
-                          ) : (
-                            <span>{getExerciseName(w.exerciseId)}</span>
-                          )}
-                        </div>
-                        <div className="text-sm text-gray-600 mt-1">
-                          {w.sets} sets × {w.reps} reps @ {w.weight || 0} kg
-                        </div>
-                      </div>
-
-                      <div className="mt-4">
-                        <button
-                          onClick={() => setSelectedExercise(w)}
-                          className="px-4 py-2 w-full bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 transition"
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {d.workouts.map((w) => (
+                        <div
+                          key={w.id}
+                          className="p-4 border border-gray-200 rounded-lg bg-gray-50 shadow hover:shadow-md transition"
                         >
-                          Log Progress
-                        </button>
-                      </div>
+                          <div>
+                            <div className="font-medium text-gray-800">
+                              {w.exerciseId ? (
+                                <Link
+                                  to={`/exercise/${w.exerciseId}`}
+                                  className="text-blue-600 hover:underline"
+                                >
+                                  {getExerciseName(w.exerciseId)}
+                                </Link>
+                              ) : (
+                                <span>{getExerciseName(w.exerciseId)}</span>
+                              )}
+                            </div>
+                            <div className="text-sm text-gray-600 mt-1">
+                              {w.sets} sets × {w.reps} reps @ {w.weight || 0} kg
+                            </div>
+                          </div>
+
+                          <div className="mt-4">
+                            <button
+                              onClick={() => setSelectedExercise(w)}
+                              className="px-4 py-2 w-full bg-blue-500 text-white rounded-lg font-medium hover:bg-blue-600 transition"
+                            >
+                              Log Progress
+                            </button>
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
+                  </div>
+                ))}
               </div>
             ))}
           </div>
-        ))}
+        ) : (
+          <ProgressTracker />
+        )}
       </div>
 
       {/* Modal */}
