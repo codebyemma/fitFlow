@@ -4,14 +4,14 @@ import useExerciseStore from "../stores/exerciseStore";
 import { useDebounce } from "../hooks/useDebounce";
 
 const Search = () => {
-  const { categories, selectedCategory, setSelectedCategory, setSearchTerm, loading } = useExerciseStore();
+  const { selectedCategory, setSelectedCategory, setSearchTerm, loading, exercises } = useExerciseStore();
 
   const [inputValue, setInputValue] = useState("");
   const debouncedSearchTerm = useDebounce(inputValue, 500); // 0.5s debounce
 
   // Update search term when debounced value changes
   useEffect(() => {
-    setSearchTerm(debouncedSearchTerm);
+    setSearchTerm((debouncedSearchTerm || "").trim());
   }, [debouncedSearchTerm, setSearchTerm]);
 
   const handleClear = () => {
@@ -19,6 +19,8 @@ const Search = () => {
     setSearchTerm("");
     setSelectedCategory("");
   };
+
+  const categories = ["all", ...new Set(exercises.map((ex) => ex.category?.name).filter(Boolean))];
 
   return (
     <div className="mb-8">
@@ -45,7 +47,7 @@ const Search = () => {
           <label className="font-medium">Filter by Category:</label>
           <select
             className="p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-            value={selectedCategory}
+            value={selectedCategory || "all"}
             onChange={(e) => setSelectedCategory(e.target.value)}
             disabled={loading}
           >

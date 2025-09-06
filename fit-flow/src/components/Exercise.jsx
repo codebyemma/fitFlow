@@ -1,14 +1,29 @@
 import { useEffect } from "react";
 import useExerciseStore from "../stores/exerciseStore";
-
+import Search from "./Search";
 const Exercise = ({ onSelect }) => {
-    const { exercises, fetchExercises, loading, error } = useExerciseStore();
+    const { exercises, fetchExercises, loading, error, searchTerm, selectedCategory } = useExerciseStore();
 
     useEffect(() => {
         if (exercises.length === 0) {
             fetchExercises();
         }
     }, [exercises.length, fetchExercises]);
+
+    const filtered = exercises.filter((ex) => {
+    // Prefer top-level name from API, fall back to translation name, then empty string
+    const rawName = ex.name || ex.translations?.find((t) => t.language === 2)?.name || "";
+    const exerciseName = String(rawName);
+    const matchesSearch = exerciseName
+      .toLowerCase()
+      .includes((searchTerm || "").toLowerCase());
+    const matchesCategory =
+      !selectedCategory ||
+      selectedCategory === "all" ||
+      ex.category?.name === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
+
 
     if (loading) {
         return (
@@ -42,17 +57,22 @@ const Exercise = ({ onSelect }) => {
     return (
         <div className="p-4">
             <h2 className="text-lg font-semibold mb-3">Select Exercise</h2>
+            <Search />
             <div className="max-h-60 overflow-y-auto space-y-2">
-                {exercises.map((ex) => (
+                {filtered.map((ex) => {
+                    const translation = ex.translations?.find((t) => t.language === 2);
+                    const name = translation?.name || "Unnamed Exercise";
+                return (
                     <button
                         key={ex.id}
                         onClick={() => onSelect(ex)}
                         className="w-full text-left p-3 border rounded hover:bg-blue-50 hover:border-blue-300 transition-colors"
                     >
-                        <div className="font-medium">{ex.name}</div>
-                        <div className="text-sm text-gray-600">{ex.bodyPart}</div>
+                        <p className="font-medium">{name}</p>
+                        <p className="text-sm text-gray-600">{ex.category?.name}</p>
                     </button>
-                ))}
+                );
+                })}
             </div>
         </div>
     );
